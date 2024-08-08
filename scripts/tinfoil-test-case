@@ -1,0 +1,108 @@
+#! /usr/bin/env python3
+
+import bb.tinfoil
+
+print('1. Test case expects the package to NOT exist, due to lack of setting WITH_TINFOIL = "1"')
+with bb.tinfoil.Tinfoil() as tinfoil:
+    tinfoil.prepare(config_only=True, quiet=2)
+
+    print('WITH_TINFOIL Value: %s' % tinfoil.config_data.getVar('WITH_TINFOIL'))
+
+    try:
+        d = tinfoil.parse_recipes()
+    except Exception as e:
+        print('Exception: %s' % e)
+
+    try:
+        tinfoil.build_targets('tinfoil-pkg-test-native', None)
+    except Exception as e:
+        print('Exception: %s' % e)
+
+print('test complete\n\n')
+
+
+print('2. Test case sets the value before running parse_recipe. (Still fails)')
+with bb.tinfoil.Tinfoil() as tinfoil:
+    tinfoil.prepare(config_only=True, quiet=2)
+
+    print('WITH_TINFOIL Value: %s' % tinfoil.config_data.getVar('WITH_TINFOIL'))
+
+    tinfoil.config_data.setVar('WITH_TINFOIL', '1')
+
+    print('WITH_TINFOIL Value: %s' % tinfoil.config_data.getVar('WITH_TINFOIL'))
+
+    try:
+        d = tinfoil.parse_recipes()
+    except Exception as e:
+        print('Exception: %s' % e)
+
+    try:
+        tinfoil.build_targets('tinfoil-pkg-test-native', None)
+    except Exception as e:
+        print('Exception: %s' % e)
+
+print('test complete\n\n')
+
+print('2.1. Test case sets the value before running parse_recipe. (Still fails)')
+with bb.tinfoil.Tinfoil() as tinfoil:
+    tinfoil.prepare(config_only=True, quiet=2)
+
+    print('WITH_TINFOIL Value: %s' % tinfoil.config_data.getVar('WITH_TINFOIL'))
+
+    tinfoil.config_data.setVar('WITH_TINFOIL', '1')
+
+    print('WITH_TINFOIL Value: %s' % tinfoil.config_data.getVar('WITH_TINFOIL'))
+
+    #try:
+    #    d = tinfoil.parse_recipes()
+    #except Exception as e:
+    #    print('Exception: %s' % e)
+
+    try:
+        tinfoil.build_targets('tinfoil-pkg-test-native', None)
+    except Exception as e:
+        print('Exception: %s' % e)
+
+print('test complete\n\n')
+
+
+print('3. Test case loads a prefile, but while this affects the variables, the package STILL is not available to build.')
+with bb.tinfoil.Tinfoil() as tinfoil:
+    tinfoilConfig = bb.tinfoil.TinfoilConfigParameters(config_only=True, quiet=2, prefile=[os.path.join(os.path.dirname(__file__), '../conf/with_tinfoil.conf')])
+
+    tinfoil.prepare(config_only=True, quiet=2, config_params=tinfoilConfig)
+
+    print('WITH_TINFOIL Value: %s' % tinfoil.config_data.getVar('WITH_TINFOIL'))
+
+    try:
+        d = tinfoil.parse_recipes()
+    except Exception as e:
+        print('Exception: %s' % e)
+
+    try:
+        tinfoil.build_targets('tinfoil-pkg-test-native', None)
+    except Exception as e:
+        print('Exception: %s' % e)
+
+print('test complete\n\n')
+
+
+print('3.1. Test case loads a prefile, but while this affects the variables, this time we SKIP parse_recipes.')
+with bb.tinfoil.Tinfoil() as tinfoil:
+    tinfoilConfig = bb.tinfoil.TinfoilConfigParameters(config_only=True, quiet=2, prefile=[os.path.join(os.path.dirname(__file__), '../conf/with_tinfoil.conf')])
+
+    tinfoil.prepare(config_only=True, quiet=2, config_params=tinfoilConfig)
+
+    print('WITH_TINFOIL Value: %s' % tinfoil.config_data.getVar('WITH_TINFOIL'))
+
+    #try:
+    #    d = tinfoil.parse_recipes()
+    #except Exception as e:
+    #    print('Exception: %s' % e)
+
+    try:
+        tinfoil.build_targets('tinfoil-pkg-test-native', None)
+    except Exception as e:
+        print('Exception: %s' % e)
+
+print('test complete\n\n')

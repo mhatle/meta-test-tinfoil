@@ -1,0 +1,57 @@
+Setup instructions
+------
+
+clone poky
+clone this layer
+
+In poky, run oe-init-build-env and create a build directory
+bitbake-layers add-layer <this layer>
+
+
+Execution instruction
+------
+
+Run the script:
+
+meta-test-tinfoil/scripts/tinfoil-test-case
+
+
+Test description (see the tinfoil-test-case)
+-----
+
+1. Default build, should fail
+
+   Instantiate Tinfoil
+   prepare
+   parse_recipes
+   build 'tinfoil-pkg-test-native' (should fail)
+
+2. Manual set WITH_TINFOIL = "1", it fails
+
+   Instantiate Tinfoil
+   prepare
+   set WITH_TINFOIL = "1"
+   parse_recipes
+   build 'tinfoil-pkg-test-native'
+
+2.1. Same as 2, but skips 'parse_recipes', it fails
+   Instantiate Tinfoil
+   prepare
+   set WITH_TINFOIL = "1"
+   build 'tinfoil-pkg-test-native'
+ 
+
+3. Add a prefile that sets WITH_TINFOIL = "1", it still fails
+
+   Instantiate Tinfoil
+   Setup TinfoilConfigParameters w/ prefile of conf/with_tinfoil.conf
+   prepare
+   parse_recipes
+   build 'tinfoil-pkg-test-native'
+
+3.1. Same as 3, but without the 'parse_rcipes' call, it passes
+
+   Instantiate Tinfoil
+   Setup TinfoilConfigParameters w/ prefile of conf/with_tinfoil.conf
+   prepare
+   build 'tinfoil-pkg-test-native' (works)
